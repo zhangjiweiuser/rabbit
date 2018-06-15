@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhang.rabbit.dao.UserDao">
+
+    <sql id="column">
+        id,name,age
+    </sql>
+
+    <select id="queryUserById" parameterType="int" resultType="User">
+        select
+        <include refid="column"/>
+        from user where id=#{id}
+    </select>
+
+    <select id="queryUserMapById" parameterType="int" resultType="map">
+        select
+        <include refid="column"/>
+        from user where id=#{id}
+    </select>
+
+    <select id="queryUserMapWithKeyById" parameterType="int" resultType="user">
+        select
+        <include refid="column"/>
+        from user where id=#{id}
+    </select>
+
+
+    <select id="queryUserByIds" parameterType="int" resultType="user">
+
+        select <include refid="column"/>
+        from user
+        <foreach collection="ids" index="index" item="id" open="where id in (" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="queryUserByName" parameterType="string" resultType="user">
+        <!-- 可以自定义一个规则，将传入的参数进行一些特殊处理 -->
+        <bind name="_name" value="name+'%'"/>
+        select <include refid="column"/> from user where name like #{_name}
+    </select>
+
+    <insert id="insertUser" parameterType="map">
+        insert into user(name,age) values(#{name},#{age})
+    </insert>
+
+    <resultMap id="mapResultMap" type="hashMap">
+        <result property="key" column="id"/>
+        <result property="value" column="name"/>
+    </resultMap>
+    <select id="queryMapById" resultMap="mapResultMap" parameterType="int">
+        select id,name from user where id=#{id}
+    </select>
+</mapper>
